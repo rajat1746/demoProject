@@ -7,10 +7,17 @@ import MenuIcon from "@mui/icons-material/Menu";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
+import { useNavigate } from "react-router-dom";
 
 const navItems = ["OrderNow", "Reservation", "Login", "Register"];
 
 export default function DrawerAppBar(props) {
+  const navigate = useNavigate();
+
+  const handleNavigate = (path) => {
+    navigate(path);
+  };
+
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
@@ -29,12 +36,18 @@ export default function DrawerAppBar(props) {
           <Typography
             variant='h6'
             component='div'
-            sx={{ flexGrow: 1, display: { xs: "none", sm: "block" } }}>
+            sx={{ flexGrow: 1, display: { xs: "none", sm: "block" } }}
+            onClick={() => handleNavigate("/")}>
             HOME
           </Typography>
           <Box sx={{ display: { xs: "none", sm: "block" } }}>
             {navItems.map((item) => (
-              <Button key={item} sx={{ color: "#000" }}>
+              <Button
+                key={item}
+                sx={{ color: "#000" }}
+                onClick={() =>
+                  handleNavigate(item === "Home" ? "/" : `/${item}`)
+                }>
                 {item}
               </Button>
             ))}

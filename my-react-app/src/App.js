@@ -1,18 +1,27 @@
-import "./App.css";
-import Header from "./Components/Header/navbar";
-import Carasol from "./Components/Carasol/carasol";
+// App.js
+import React from "react";
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import Home from "./Components/Home/home";
 import Footer from "./Components/Footer/footer";
+import Header from "./Components/Header/navbar";
+import OrderNow from "./Components/Order/OrderNow";
+import "./App.css";
 
-function App() {
+const App = () => {
   return (
     <div id='root'>
-      <Header />
-      <div id='main-content'>
-        <Carasol />
-      </div>
-      <Footer />
+      <Router>
+        <Header />
+        <div id='main-content'>
+          <Routes>
+            <Route path='/' element={<Home />} />
+            <Route path='/orderNow' element={<OrderNow />} />
+          </Routes>
+        </div>
+       {/* <Footer /> */}
+      </Router>
     </div>
   );
-}
+};
 
 export default App;

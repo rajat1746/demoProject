@@ -2,13 +2,14 @@ import React from "react";
 import { Box, Typography, Link, Grid, TextField } from "@mui/material";
 import FacebookIcon from "@mui/icons-material/Facebook";
 import InstagramIcon from "@mui/icons-material/Instagram";
+import "./footer.css";
 
 const Footer = () => {
   return (
     <Box
       component='footer'
       sx={{
-        backgroundColor: "#2b3e50",
+        backgroundColor: "#333",
         color: "#fff",
         padding: "20px",
         display: "flex",
