@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import {
   AppBar,
   Tab,
@@ -13,11 +13,17 @@ import {
 
 import SearchIcon from "@mui/icons-material/Search";
 import { grey } from "@mui/material/colors";
+import axios from "axios";
+import CategoryContext from "./Cateogaries/CateogaryContext";
+import MenuContext from "./Menu/MenuContext";
 
 function MenuContent() {
   const [value, setValue] = useState(0);
+  const { menus, error } = useContext(MenuContext);
+  const { categories } = useContext(CategoryContext);
   const [anchorEl, setAnchorEl] = React.useState(null);
 
+  console.log(menus, categories);
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
