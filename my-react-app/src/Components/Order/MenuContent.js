@@ -12,6 +12,7 @@ import {
   Accordion,
   AccordionSummary,
   AccordionDetails,
+  CircularProgress, // Import CircularProgress
 } from "@mui/material";
 
 import SearchIcon from "@mui/icons-material/Search";
@@ -19,38 +20,43 @@ import { ExpandMore as ExpandMoreIcon } from "@mui/icons-material";
 import { grey } from "@mui/material/colors";
 import axios from "axios";
 import CategoryContext from "./Cateogaries/CateogaryContext";
-import {MenuContext} from "./Menu/MenuContext";
+import { MenuContext } from "./Menu/MenuContext";
 import AddIcon from "@mui/icons-material/Add";
 
 function MenuContent() {
   const [value, setValue] = useState(0);
-  const { menus, error, selectedItems, addSelectedItem } = useContext(MenuContext);
+  const { menus, error, selectedItems, addSelectedItem } =
+    useContext(MenuContext);
   const { categories } = useContext(CategoryContext);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [categoryMenus, setCategoryMenus] = useState({});
+  const [loading, setLoading] = useState(true); // Add loading state
 
   useEffect(() => {
-    // Fetch menus for each category
-
     const fetchCategoryMenus = async () => {
-      const categoryMenusData = {};
+      try {
+        const categoryMenusData = {};
+        await Promise.all(
+          categories.map(async (category) => {
+            const response = await axios.get(
+              `https://test.ashianafresh.com/api/menus/?category=${category.attributes.permalink_slug}`
+            );
 
-      await Promise.all(
-        categories.map(async (category) => {
-          const response = await axios.get(
-            `https://test.ashianafresh.com/api/menus/?category=${category.attributes.permalink_slug}`
-          );
+            categoryMenusData[category.attributes.name] = response.data.data;
+          })
+        );
 
-          categoryMenusData[category.attributes.name] = response.data.data;
-        })
-      );
-
-      setCategoryMenus(categoryMenusData);
+        setCategoryMenus(categoryMenusData);
+      } catch (error) {
+        console.error("Error fetching category menus:", error);
+      } finally {
+        setLoading(false); // Set loading to false after fetching
+      }
     };
 
     fetchCategoryMenus();
   }, [categories]);
-  console.log(categoryMenus);
+
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
@@ -105,70 +111,77 @@ function MenuContent() {
         </Toolbar>
       </AppBar>
 
-      {/* Render content based on selected tab */}
+      {/* Render content based on selected tab or display loader */}
       <div style={{ flex: 1, overflowY: "auto", marginTop: "5px" }}>
-        {value === 0 && (
-          <div>
-            {Object.entries(categoryMenus).map(([header, menuItems]) => (
-              <Accordion key={header}>
-                <AccordionSummary
-                  expandIcon={<ExpandMoreIcon />}
-                  aria-controls={`${header}-content`}
-                  id={`${header}-header`}>
-                  <Typography>{header}</Typography>
-                </AccordionSummary>
-                <AccordionDetails>
-                  <div style={{ width: "100%" }}>
-                    {menuItems.map((menuItem) => (
-                      <div
-                        key={menuItem.attributes.id}
-                        style={{
-                          display: "flex",
-                          justifyContent: "space-between",
-                          alignItems: "center",
-                        }}>
-                        <div>
+        {loading ? (
+          <CircularProgress style={{ marginTop: "20px" }} />
+        ) : (
+          <>
+            {value === 0 && (
+              <div>
+                {Object.entries(categoryMenus).map(([header, menuItems]) => (
+                  <Accordion key={header}>
+                    <AccordionSummary
+                      expandIcon={<ExpandMoreIcon />}
+                      aria-controls={`${header}-content`}
+                      id={`${header}-header`}>
+                      <Typography>{header}</Typography>
+                    </AccordionSummary>
+                    <AccordionDetails>
+                      <div style={{ width: "100%" }}>
+                        {menuItems.map((menuItem) => (
                           <div
+                            key={menuItem.attributes.id}
                             style={{
                               display: "flex",
-                              alignItems: "center",
                               justifyContent: "space-between",
-                              width: "450px",
+                              alignItems: "center",
                             }}>
-                            <Typography variant='subtitle1'>
-                              {menuItem.attributes.menu_name}
-                            </Typography>
-                            <div
-                              style={{
-                                display: "flex",
-                                alignItems: "center",
-                              }}>
-                              <Typography variant='body2'>
-                                {menuItem.attributes.menu_price}
-                              </Typography>
-                              <IconButton  onClick={() => addSelectedItem(menuItem)}>
-                                <AddIcon />
-                              </IconButton>
+                            <div>
+                              <div
+                                style={{
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "space-between",
+                                  width: "450px",
+                                }}>
+                                <Typography variant='subtitle1'>
+                                  {menuItem.attributes.menu_name}
+                                </Typography>
+                                <div
+                                  style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                  }}>
+                                  <Typography variant='body2'>
+                                    {menuItem.attributes.menu_price}
+                                  </Typography>
+                                  <IconButton
+                                    onClick={() => addSelectedItem(menuItem)}>
+                                    <AddIcon />
+                                  </IconButton>
+                                </div>
+                              </div>
+
+                              {menuItem.attributes.menu_description && (
+                                <Typography variant='body2'>
+                                  {menuItem.attributes.menu_description}
+                                </Typography>
+                              )}
                             </div>
                           </div>
-
-                          {menuItem.attributes.menu_description && (
-                            <Typography variant='body2'>
-                              {menuItem.attributes.menu_description}
-                            </Typography>
-                          )}
-                        </div>
+                        ))}
                       </div>
-                    ))}
-                  </div>
-                </AccordionDetails>
-              </Accordion>
-            ))}
-          </div>
+                    </AccordionDetails>
+                  </Accordion>
+                ))}
+              </div>
+            )}
+            {value === 1 && <Typography>Reviews Content Goes Here</Typography>}
+            {value === 2 && <Typography>Info Content Goes Here</Typography>}
+            {value === 3 && <Typography>Gallery Content Goes Here</Typography>}
+          </>
         )}
-        {value === 1 && <Typography>Reviews Content Goes Here</Typography>}
-        {value === 2 && <Typography>Info Content Goes Here</Typography>}
-        {value === 3 && <Typography>Gallery Content Goes Here</Typography>}
       </div>
     </Grid>
   );
