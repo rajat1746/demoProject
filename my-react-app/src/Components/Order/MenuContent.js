@@ -19,12 +19,12 @@ import { ExpandMore as ExpandMoreIcon } from "@mui/icons-material";
 import { grey } from "@mui/material/colors";
 import axios from "axios";
 import CategoryContext from "./Cateogaries/CateogaryContext";
-import MenuContext from "./Menu/MenuContext";
+import {MenuContext} from "./Menu/MenuContext";
 import AddIcon from "@mui/icons-material/Add";
 
 function MenuContent() {
   const [value, setValue] = useState(0);
-  const { menus, error } = useContext(MenuContext);
+  const { menus, error, selectedItems, addSelectedItem } = useContext(MenuContext);
   const { categories } = useContext(CategoryContext);
   const [anchorEl, setAnchorEl] = React.useState(null);
   const [categoryMenus, setCategoryMenus] = useState({});
@@ -146,7 +146,7 @@ function MenuContent() {
                               <Typography variant='body2'>
                                 {menuItem.attributes.menu_price}
                               </Typography>
-                              <IconButton>
+                              <IconButton  onClick={() => addSelectedItem(menuItem)}>
                                 <AddIcon />
                               </IconButton>
                             </div>

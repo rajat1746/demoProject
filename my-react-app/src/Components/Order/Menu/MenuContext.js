@@ -1,6 +1,14 @@
 // contexts/MenuContext.js
-import { createContext } from 'react';
+import { createContext, useContext } from "react";
 
 const MenuContext = createContext();
 
-export default MenuContext;
+const useMenuContext = () => {
+  const context = useContext(MenuContext);
+  if (!context) {
+    throw new Error("useMenuContext must be used within a MenuProvider");
+  }
+  return context;
+};
+
+export { MenuContext, useMenuContext };
